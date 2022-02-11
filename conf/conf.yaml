@@ -1,0 +1,26 @@
+
+# pg 库连接配置
+Pgsql:
+  DefaultDSN: "host=127.0.0.1 port=5432 user=postgres password=postgres dbname=postgres"
+  QueryTimeout: 100000
+  MaxIdleConns: 10
+  MaxOpenConns: 500
+  LogLevel: info
+
+# http配置
+Service:
+  HttpPort: 8848
+
+# 程序基本配置
+Log:
+  LogPath: /Users/heqimin/Code/Go/finance/importer/log/importer.log
+  GinLogPath: /Users/heqimin/Code/Go/finance/importer/log/gin.log
+
+Api:
+  AppName: "thshq-finance-import"
+  Rps:
+    Url: "http://testm.10jqka.com.cn/vaserviece/auth/api/ai-band-radar-v2/v1/index/rps"
+    Cron: "0 0 15,16 * * ?"
+  Fxj:
+    Url: "http://ifind-ds.ifind-db/proxy/ifund/ifund/index"
+    Cron: "0 0 15,16 * * ?"

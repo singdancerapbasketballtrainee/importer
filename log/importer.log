@@ -1,0 +1,37 @@
+{"level":"info","time":"2022-01-26 16:29:27.705","line":"importer/main.go:12","func":"main.main","msg":"Start up"}
+{"level":"fatal","time":"2022-01-26 16:29:27.736","line":"importer/main.go:19","func":"main.main","msg":"listen tcp :8848: bind: address already in use"}
+{"level":"info","time":"2022-01-26 16:29:56.296","line":"importer/main.go:12","func":"main.main","msg":"Start up"}
+{"level":"info","time":"2022-01-27 10:48:04.674","line":"importer/main.go:12","func":"main.main","msg":"Start up"}
+{"level":"info","time":"2022-01-27 10:52:37.709","line":"importer/main.go:12","func":"main.main","msg":"Start up"}
+{"level":"info","time":"2022-01-27 10:57:49.466","line":"importer/main.go:12","func":"main.main","msg":"Start up"}
+{"level":"info","time":"2022-01-27 10:58:58.940","line":"importer/main.go:12","func":"main.main","msg":"Start up"}
+{"level":"info","time":"2022-02-08 10:38:07.135","line":"importer/main.go:12","func":"main.main","msg":"Start up"}
+{"level":"info","time":"2022-02-08 10:54:39.514","line":"importer/main.go:12","func":"main.main","msg":"Start up"}
+{"level":"info","time":"2022-02-08 13:58:14.751","line":"importer/main.go:12","func":"main.main","msg":"Start up"}
+{"level":"info","time":"2022-02-08 13:59:24.372","line":"importer/main.go:12","func":"main.main","msg":"Start up"}
+{"level":"error","time":"2022-02-08 14:00:00.053","line":"dao/dao.go:64","func":"importer/app/dao.(*dao).addImportCron.func2","msg":"import fxj error:ERROR: type \"double\" does not exist (SQLSTATE 42704)"}
+{"level":"info","time":"2022-02-08 14:14:34.480","line":"importer/main.go:12","func":"main.main","msg":"Start up"}
+{"level":"error","time":"2022-02-08 14:15:00.058","line":"dao/dao.go:64","func":"importer/app/dao.(*dao).addImportCron.func2","msg":"import fxj error:ERROR: type \"double\" does not exist (SQLSTATE 42704)"}
+{"level":"info","time":"2022-02-08 14:16:07.902","line":"importer/main.go:12","func":"main.main","msg":"Start up"}
+{"level":"info","time":"2022-02-08 14:17:20.702","line":"importer/main.go:12","func":"main.main","msg":"Start up"}
+{"level":"info","time":"2022-02-08 14:25:12.692","line":"importer/main.go:12","func":"main.main","msg":"Start up"}
+{"level":"warn","time":"2022-02-08 14:25:26.449","line":"dao/dao_impl.go:24","func":"importer/app/dao.(*dao).ImportRps","msg":"日期没有rps数据"}
+{"level":"error","time":"2022-02-08 14:25:35.118","line":"request/fxj.go:130","func":"importer/app/request.GetFxj","msg":"get 000001 data error: Get \"http://ifind-ds.ifind-db/proxy/ifund/ifund/index?xml_request=\": dial tcp: lookup ifind-ds.ifind-db: no such host"}
+{"level":"error","time":"2022-02-08 14:25:35.120","line":"request/fxj.go:130","func":"importer/app/request.GetFxj","msg":"get 160127 data error: Get \"http://ifind-ds.ifind-db/proxy/ifund/ifund/index?xml_request=\": dial tcp: lookup ifind-ds.ifind-db: no such host"}
+{"level":"error","time":"2022-02-08 14:25:35.121","line":"request/fxj.go:130","func":"importer/app/request.GetFxj","msg":"get 110065 data error: Get \"http://ifind-ds.ifind-db/proxy/ifund/ifund/index?xml_request=\": dial tcp: lookup ifind-ds.ifind-db: no such host"}
+{"level":"info","time":"2022-02-09 14:56:09.256","line":"importer/main.go:12","func":"main.main","msg":"Start up"}
+{"level":"warn","time":"2022-02-09 14:57:13.404","line":"dao/dao_impl.go:26","func":"importer/app/dao.(*dao).ImportRps","msg":"lack of rps data in "}
+{"level":"warn","time":"2022-02-09 14:58:25.579","line":"dao/dao_impl.go:26","func":"importer/app/dao.(*dao).ImportRps","msg":"lack of rps data in "}
+{"level":"info","time":"2022-02-09 14:59:31.166","line":"importer/main.go:12","func":"main.main","msg":"Start up"}
+{"level":"info","time":"2022-02-09 15:00:00.001","line":"dao/dao.go:58","func":"importer/app/dao.(*dao).addImportRps.func1","msg":"rps cron start"}
+{"level":"info","time":"2022-02-09 15:00:00.001","line":"dao/dao.go:58","func":"importer/app/dao.(*dao).addImportRps.func1","msg":"rps cron start"}
+{"level":"warn","time":"2022-02-09 15:00:00.074","line":"dao/dao_impl.go:26","func":"importer/app/dao.(*dao).ImportRps","msg":"lack of rps data in 2022-02-09"}
+{"level":"warn","time":"2022-02-09 15:00:00.077","line":"dao/dao_impl.go:26","func":"importer/app/dao.(*dao).ImportRps","msg":"lack of rps data in 2022-02-09"}
+{"level":"info","time":"2022-02-09 15:01:49.535","line":"importer/main.go:12","func":"main.main","msg":"Start up"}
+{"level":"warn","time":"2022-02-09 15:01:54.879","line":"dao/dao_impl.go:26","func":"importer/app/dao.(*dao).ImportRps","msg":"lack of rps data in 2020-02-08"}
+{"level":"info","time":"2022-02-09 15:59:31.740","line":"importer/main.go:12","func":"main.main","msg":"Start up"}
+{"level":"warn","time":"2022-02-09 15:59:38.140","line":"dao/dao_impl.go:26","func":"importer/app/dao.(*dao).ImportRps","msg":"lack of rps data in 2020-02-08"}
+{"level":"info","time":"2022-02-09 16:27:24.683","line":"importer/main.go:12","func":"main.main","msg":"Start up"}
+{"level":"info","time":"2022-02-10 16:36:52.103","line":"importer/main.go:12","func":"main.main","msg":"Start up"}
+{"level":"info","time":"2022-02-10 16:37:22.225","line":"importer/main.go:12","func":"main.main","msg":"Start up"}
+{"level":"info","time":"2022-02-10 16:47:42.011","line":"importer/main.go:12","func":"main.main","msg":"Start up"}
