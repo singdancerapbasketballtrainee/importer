@@ -9,18 +9,14 @@ import (
 	"importer/app/config"
 )
 
-var Db *gorm.DB
-
 func NewDB() (db *gorm.DB, cf func(), err error) {
 	pgCfg := config.GetPgConfig()
 	db, err = makePgConn(pgCfg)
-	Db = db
 	cf = Close
 	return
 }
 
 func Close() {
-	Db = nil
 }
 
 /**

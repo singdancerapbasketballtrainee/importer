@@ -6,6 +6,7 @@ import (
 	"importer/app/dao/orm"
 	"importer/app/log"
 	"importer/app/request"
+	"time"
 )
 
 // ImportRps is a dao.将rps数据批量导入数据库
@@ -43,11 +44,12 @@ func (d *dao) ImportFxj() error {
 		}
 		log.Log.Info("create table fxj success")
 	}
+	t := time.Now()
 	fxj, err := request.GetFxj()
 	if err != nil {
 		return err
 	}
-	d.db.Delete(orm.Fxj{})
 	d.db.Create(fxj)
+	d.db.Delete(orm.Fxj{}, "mtime < ?", t)
 	return d.db.Error
 }

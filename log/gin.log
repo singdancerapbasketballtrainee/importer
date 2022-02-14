@@ -1,1 +1,5 @@
 2022-02-09 15:59:38.164	info	/rps	{"status": 200, "method": "POST", "path": "/rps", "query": "", "ip": "127.0.0.1", "user-agent": "curl/7.77.0", "errors": "", "cost": 0.09322525}
+2022-02-14 16:42:23.809	info	/ping	{"status": 200, "method": "GET", "path": "/ping", "query": "", "ip": "127.0.0.1", "user-agent": "curl/7.77.0", "errors": "", "cost": 0.000118333}
+2022-02-14 16:44:54.034	info	/fxj	{"status": 200, "method": "POST", "path": "/fxj", "query": "", "ip": "127.0.0.1", "user-agent": "curl/7.77.0", "errors": "", "cost": 0.134929334}
+2022-02-14 16:53:59.195	info	/fxj	{"status": 200, "method": "POST", "path": "/fxj", "query": "", "ip": "127.0.0.1", "user-agent": "curl/7.77.0", "errors": "", "cost": 0.162828833}
+2022-02-14 16:56:33.104	info	/fxj	{"status": 200, "method": "POST", "path": "/fxj", "query": "", "ip": "127.0.0.1", "user-agent": "curl/7.77.0", "errors": "", "cost": 0.101453583}

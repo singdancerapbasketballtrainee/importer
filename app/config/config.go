@@ -10,6 +10,7 @@ import (
 type (
 	PgConfig struct {
 		DefaultDSN   string `yaml:"DefaultDSN"`   // postgres default database connect dsn
+		IfindPgDSN   string `yaml:"IfindPgDSN"`   // postgres ifind database connect dsn
 		QueryTimeout int    `yaml:"QueryTimeout"` // time out of pg query
 		MaxIdleConns int    `yaml:"MaxIdleConns"` // max number of idles existed
 		MaxOpenConns int    `yaml:"MaxOpenConns"` // max number of idles opened
@@ -47,8 +48,13 @@ type (
 		Cron string `yaml:"Cron"`
 	}
 	FxjConfig struct {
-		Url  string `yaml:"Url"`
-		Cron string `yaml:"Cron"`
+		Url     string `yaml:"Url"`
+		Cron    string `yaml:"Cron"`
+		Markets struct {
+			Bond  []uint8 `yaml:"Bond"`
+			Fund  []uint8 `yaml:"Fund"`
+			Index []uint8 `yaml:"Index"`
+		} `yaml:"Market"`
 	}
 )
 
@@ -70,6 +76,7 @@ func ConfigureInit() {
 	if yaml.Unmarshal(content, &cfg) != nil {
 		log.Fatalf("解析config.yaml出错: %v", err)
 	}
+	log.Println(cfg)
 }
 
 func GetPgConfig() PgConfig {

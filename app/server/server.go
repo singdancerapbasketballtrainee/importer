@@ -60,6 +60,7 @@ func FxjHandler(c *gin.Context) {
 	err := svc.ImportFxj()
 	if err != nil {
 		c.String(400, err.Error())
+		return
 	}
 	c.String(200, "success")
 }

@@ -1,6 +1,7 @@
 package request
 
 import (
+	"bytes"
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
@@ -11,6 +12,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -35,19 +37,13 @@ type Param struct {
 
 var indexXml, fundXml, bondXml XMLRequest
 
-var (
-	IndexXmlStr string
-	FundXmlStr  string
-	BondXmlStr  string
-)
+type _type int
 
+// type
 const (
-	indexCode  = "000001"
-	indexCode_ = "000001.SH"
-	fundCode   = "160127"
-	fundCode_  = "160127.OF"
-	bondCode   = "110065"
-	bondCode_  = "110065.SH"
+	index _type = iota
+	fund
+	bond
 )
 
 func init() {
@@ -55,25 +51,8 @@ func init() {
 		{Name: "FD0", Value: "111", System: "true"},
 	}
 
-	indexXml = XMLRequest{Thscodes: indexCode_}
-	item := Item{Name: "06971_000_00_0_1", Params: baseParams}
-	indexXml.Items = append(indexXml.Items, item)
-
-	fundXml = XMLRequest{Thscodes: fundCode_}
-	item = Item{Name: "00038_000_00_0_5", Params: baseParams}
-	item.Params = append(item.Params, Param{Name: "FT", Value: "100", System: "true"})
-	fundXml.Items = append(fundXml.Items, item)
-
-	bondXml = XMLRequest{Thscodes: bondCode_}
-	item = Item{Name: "03548_000_00_0_11", Params: baseParams}
-	item.Params = append(item.Params, Param{Name: "FJ", Value: "103", System: "true"})
-	bondXml.Items = append(bondXml.Items, item)
-}
-
-func init() {
 	//IndexXmlStr = `<?xml version="1.0" encoding="UTF-8"?>
 	//<request>
-	//<thscodes>000001.SH</thscodes>
 	//<items>
 	//<item name="06971_000_00_0_1">
 	//<params>
@@ -81,13 +60,14 @@ func init() {
 	//</params>
 	//</item>
 	//</items>
+	//<thscodes>code1,code2...</thscodes>
 	//</request>`
-	output, _ := xml.MarshalIndent(&indexXml, "", "")
-	IndexXmlStr = string(output)
+	indexXml = XMLRequest{}
+	item := Item{Name: "06971_000_00_0_1", Params: baseParams}
+	indexXml.Items = append(indexXml.Items, item)
 
 	//FundXmlStr = `<?xml version="1.0" encoding="UTF-8"?>
 	//<request>
-	//<thscodes>160201.OF</thscodes>
 	//<items>
 	//<item name="00038_000_00_0_5">
 	//<params>
@@ -96,13 +76,15 @@ func init() {
 	//</params>
 	//</item>
 	//</items>
+	//<thscodes>code1,code2,...</thscodes>
 	//</request>`
-	output, _ = xml.MarshalIndent(&fundXml, "", "")
-	FundXmlStr = string(output)
+	fundXml = XMLRequest{}
+	item = Item{Name: "00038_000_00_0_5", Params: baseParams}
+	item.Params = append(item.Params, Param{Name: "FT", Value: "100", System: "true"})
+	fundXml.Items = append(fundXml.Items, item)
 
 	//BondXmlStr = `<?xml version="1.0" encoding="UTF-8"?>
 	//<request>
-	//<thscodes>110065.SH</thscodes>
 	//<items>
 	//<item name="03548_000_00_0_11">
 	//<params>
@@ -111,36 +93,52 @@ func init() {
 	//</params>
 	//</item>
 	//</items>
+	//<thscodes>code1,code2,...</thscodes>
 	//</request>`
-	output, _ = xml.MarshalIndent(&bondXml, "", "")
-	BondXmlStr = string(output)
+	bondXml = XMLRequest{}
+	item = Item{Name: "03548_000_00_0_11", Params: baseParams}
+	item.Params = append(item.Params, Param{Name: "FJ", Value: "103", System: "true"})
+	bondXml.Items = append(bondXml.Items, item)
 }
 
 // GetFxj 发行价的接口设计写得比较死，三支代码只能一个个来
 func GetFxj() ([]orm.Fxj, error) {
 	fxj := make([]orm.Fxj, 0)
-	req, err := http.NewRequest("POST", config.GetApiConfig().FxjCfg.Url, nil)
+	apiCfg := config.GetApiConfig()
+	req, err := http.NewRequest("POST", apiCfg.FxjCfg.Url, nil)
 	if err != nil {
 		return fxj, err
 	}
 	// 设置http头
-	req.Header.Set("X-Arsenal-Auth", config.GetApiConfig().AppName)
+	req.Header.Set("X-Arsenal-Auth", apiCfg.AppName)
 
-	codes := []string{indexCode_, fundCode_, bondCode_}
-	for _, code := range codes {
-		f, err := getFxjData(req, code)
-		if err != nil {
-			log.Log.Error(fmt.Sprintf("get %s data error: %s", code, err.Error()))
-		} else {
-			fxj = append(fxj, f)
+	stockMarkets := map[_type][]uint8{
+		index: apiCfg.FxjCfg.Markets.Index,
+		fund:  apiCfg.FxjCfg.Markets.Fund,
+		bond:  apiCfg.FxjCfg.Markets.Bond,
+	}
+
+	for stockType, markets := range stockMarkets {
+		for _, market := range markets {
+			f, err := getFxjData(req, market, stockType)
+			if err != nil {
+				log.Log.Error(fmt.Sprintf("get %d data error: %s", market, err.Error()))
+			} else {
+				fxj = append(fxj, f...)
+			}
 		}
+
 	}
 	return fxj, nil
 }
 
-func getFxjData(req *http.Request, code string) (fxj orm.Fxj, err error) {
+func getFxjData(req *http.Request, market uint8, stockType _type) (fxjs []orm.Fxj, err error) {
 	params := make(url.Values)
-	params.Set("xml_request", getXmlStr(code))
+	codes, code2hqcode, err := getMarketCodes(market)
+	if err != nil {
+		return
+	}
+	params.Set("xml_request", getXmlStr(codes, stockType))
 	req.URL.RawQuery = params.Encode()
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -155,65 +153,74 @@ func getFxjData(req *http.Request, code string) (fxj orm.Fxj, err error) {
 	if err != nil {
 		return
 	}
-	// 根据接口特点，此处不需要判断 ()[1] 是否存在
-	if m["rows"].(map[string]interface{})[code].([]interface{})[1] == nil {
-		err = fmt.Errorf("get fxl failed")
-		return
+	fxjs = make([]orm.Fxj, 0)
+	mtime := time.Now()
+	tradedate := getTradedate()
+	idx := 0
+	rows := m["rows"].(map[string]interface{})
+	for code, data := range rows {
+		if data.([]interface{})[1] == nil || data.([]interface{})[1].(string) == "" {
+			continue
+		}
+		strFxj := data.([]interface{})[1].(string)
+		floatFxj, _ := strconv.ParseFloat(strFxj, 64)
+		fxjs = append(fxjs, orm.Fxj{
+			StockCode: code2hqcode[code],
+			Market:    int(market),
+			TradeDate: tradedate,
+			Mtime:     mtime,
+			Fxj:       floatFxj,
+		})
+		idx++
 	}
-	strFxj := m["rows"].(map[string]interface{})[code].([]interface{})[1].(string)
-	floatFxj, err := strconv.ParseFloat(strFxj, 64)
+
+	return
+}
+
+// 和业务方确认过，有且仅有仅该三支类型
+func getBaseXml(stockType _type) XMLRequest {
+	switch stockType {
+	case index:
+		return indexXml
+	case fund:
+		return fundXml
+	case bond:
+		return bondXml
+	default:
+		return XMLRequest{}
+	}
+}
+
+func getMarketCodes(market uint8) (string, map[string]string, error) {
+	db := getIfindPg()
+	sql := fmt.Sprintf("select thscode_hq,thscode from pub205 where thsmarket_code_hq = '%d' "+
+		"and thscode is not null and thscode_hq is not null", marketUint8toInt8(market))
+	rows, err := db.Query(sql)
+	log.Log.Info("SQL query: " + sql)
 	if err != nil {
-		return
+		return "", nil, err
 	}
-	return orm.Fxj{
-		StockCode: getHqCode(code),
-		Market:    getMarket(code),
-		TradeDate: getTradedate(),
-		Mtime:     time.Now(),
-		Fxj:       floatFxj,
-	}, nil
+	defer rows.Close()
+	m := make(map[string]string)
+	codes := new(bytes.Buffer)
+	var code, hqcode string
+	for rows.Next() {
+		err = rows.Scan(&hqcode, &code)
+		if err != nil {
+			return "", nil, err
+		}
+		m[code] = hqcode
+		codes.WriteString(code)
+		codes.WriteString(",")
+	}
+	return strings.Trim(codes.String(), ","), m, nil
 }
 
-// 接口返回不带市场，提过该函数获取市场，因为只有三种类型，指数、基金、债券，所以直接用switch，多了再和getHqCode一起优化
-func getMarket(code string) int {
-	switch code {
-	case indexCode_:
-		return 20
-	case fundCode_:
-		return 35
-	case bondCode_:
-		return 105
-	default:
-		return 0
-	}
-}
-
-// 根据接口返回的带后缀的代码获取不带后缀的原代码，因为只有三种类型，指数、基金、债券，所以直接用switch，多了再和getMarket一起优化
-func getHqCode(code string) string {
-	switch code {
-	case indexCode_:
-		return indexCode
-	case fundCode_:
-		return fundCode
-	case bondCode_:
-		return bondCode
-	default:
-		return ""
-	}
-}
-
-// 同上，先写死，数据接口优化了这里一起优化
-func getXmlStr(code string) string {
-	switch code {
-	case indexCode_:
-		return IndexXmlStr
-	case fundCode_:
-		return FundXmlStr
-	case bondCode_:
-		return BondXmlStr
-	default:
-		return ""
-	}
+func getXmlStr(codes string, stockType _type) string {
+	x := getBaseXml(stockType)
+	x.Thscodes = codes
+	output, _ := xml.MarshalIndent(&x, "", "")
+	return string(output)
 }
 
 // 针对发行价的接口，一般在15:03左右更新数据
